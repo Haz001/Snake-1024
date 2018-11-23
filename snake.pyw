@@ -97,7 +97,8 @@ class gamef:
         pygame.draw.rect(screen, (8,8,8),pygame.Rect(0,vr.sh-vr.pxl,vr.sw,vr.pxl))
         color=(0,255,0)
         pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*apple.x+2,vr.pxl*apple.y+2, vr.pxl-4, vr.pxl-4))
-        pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*apple.x+2,vr.pxl*apple.y+2, vr.pxl-4, vr.pxl-4))
+        color=(255,0,0)
+        pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*bomb.x+2,vr.pxl*bomb.y+2, vr.pxl-4, vr.pxl-4))
         col = 0
         os = vr.coloroffset
         for i in range(len(snake.tailx)):
@@ -153,7 +154,6 @@ class gamef:
                 snake.x = vr.gw-2;
             else:
                 gamef.death()
-            
         else:
             snake.x+=x
         #y check
@@ -178,6 +178,12 @@ class gamef:
             apple.lvl+=1
             apple.x = random.randint(1,vr.gw-2)
             apple.y = random.randint(1,vr.gh-2)
+            bomb.x = random.randint(1,vr.gw-2)
+            bomb.y = random.randint(1,vr.gh-2)
+        elif (snake.x == bomb.x) and (snake.y == bomb.y):
+            gamef.death()
+            bomb.x = random.randint(1,vr.gw-2)
+            bomb.y = random.randint(1,vr.gh-2)
             #print("Apple pos:\nX - "+str(apple.x)+"\nY - "+str(apple.y))
         cdeaths = snake.deaths;
         for i in range(len(snake.tailx)):
