@@ -21,7 +21,7 @@ class vr:
     #grid height
     gh = 16
     #square size
-    pxl = 8
+    pxl = 32
     #screen width
     sw = 0
     #screen height
@@ -47,11 +47,23 @@ class apple:
     x = random.randint(1,vr.gw-2)
     y = random.randint(1,vr.gh-2)
     lvl = 0
+    def place():
+        apple.x = random.randint(1,vr.gw-2)
+        apple.y = random.randint(1,vr.gh-2)
+        while not(gamef.check(apple.x, apple.y)):
+            apple.x = random.randint(1,vr.gw-2)
+            apple.y = random.randint(1,vr.gh-2)
+
 
 class bomb:
     x = random.randint(1,vr.gw-2)
     y = random.randint(1,vr.gh-2)
-
+    def place():
+        bomb.x = random.randint(1,vr.gw-2)
+        bomb.y = random.randint(1,vr.gh-2)
+        while not(gamef.check(apple.x, apple.y)):
+            bomb.x = random.randint(1,vr.gw-2)
+            bomb.y = random.randint(1,vr.gh-2)
 class snake:
     ##x first then y
     leng = 4
@@ -64,6 +76,13 @@ class snake:
     deaths = 0
 
 class gamef:
+    def check(x,y):
+        for i in range(len(snake.tailx)):
+            if(x == snake.tailx[i]):
+                if(y == snake.taily[i]):
+                    return False
+        return True
+
     def death():
         snake.leng = 4
         snake.x = random.randint(1,vr.gw-2)
@@ -95,19 +114,21 @@ class gamef:
         pygame.draw.rect(screen, (8,8,8),pygame.Rect(vr.sw-vr.pxl,0,vr.pxl,vr.sh))
         pygame.draw.rect(screen, (8,8,8),pygame.Rect(0,0,vr.sw,vr.pxl))
         pygame.draw.rect(screen, (8,8,8),pygame.Rect(0,vr.sh-vr.pxl,vr.sw,vr.pxl))
-        color=(0,255,0)
-        pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*apple.x+2,vr.pxl*apple.y+2, vr.pxl-4, vr.pxl-4))
         color=(255,0,0)
         pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*bomb.x+2,vr.pxl*bomb.y+2, vr.pxl-4, vr.pxl-4))
-        col = 0
+        color=(0,255,0)
+        pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*apple.x+2,vr.pxl*apple.y+2, vr.pxl-4, vr.pxl-4))
         os = vr.coloroffset
+        col = len(snake.tailx)*os
+        print(col)
         for i in range(len(snake.tailx)):
-            if (col+os >= 255):
-                os=-vr.coloroffset
-            elif(col+os<=0):
-                os=vr.coloroffset
-            col+=os
-            color = (col,col,255)
+            if((col-os) <= 0):
+                os=255
+            else:
+                col-=os
+
+            color = (col,col,192)
+
             pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*snake.tailx[i],vr.pxl*snake.taily[i], vr.pxl, vr.pxl))
         color=(0,0,192)
         pygame.draw.rect(screen, color, pygame.Rect(vr.pxl*snake.x,vr.pxl*snake.y, vr.pxl, vr.pxl))
@@ -176,10 +197,9 @@ class gamef:
         if (snake.x == apple.x) and (snake.y == apple.y):
             snake.leng+=1
             apple.lvl+=1
-            apple.x = random.randint(1,vr.gw-2)
-            apple.y = random.randint(1,vr.gh-2)
-            bomb.x = random.randint(1,vr.gw-2)
-            bomb.y = random.randint(1,vr.gh-2)
+
+            apple.place()
+            bomb.place()
         elif (snake.x == bomb.x) and (snake.y == bomb.y):
             gamef.death()
             bomb.x = random.randint(1,vr.gw-2)
