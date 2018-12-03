@@ -21,7 +21,7 @@ class vr:
     #grid height
     gh = 16
     #square size
-    pxl = 32
+    pxl = 8
     #screen width
     sw = 0
     #screen height
@@ -85,7 +85,7 @@ class gamef:
                     of = 1
                 if (((x+of)%2)==0):
                     pygame.draw.rect(screen, (32,32,32),pygame.Rect(x*vr.pxl,y*vr.pxl,vr.pxl,vr.pxl))
-                    
+
                 else:
                     pygame.draw.rect(screen, (64,64,64),pygame.Rect(x*vr.pxl,y*vr.pxl,vr.pxl,vr.pxl))
                 ty = not ty
@@ -147,7 +147,7 @@ class gamef:
             else:
                 gamef.death()
             #print ("out of bounds")
-            
+
         elif(snake.x+x)<= 0:
             #print ("out of bounds")
             if(vr.wl):
@@ -169,7 +169,7 @@ class gamef:
                 snake.y = vr.gh-2;
             else:
                 gamef.death()
-            
+
         else:
             snake.y+=y
         #apple
@@ -198,15 +198,15 @@ class gamef:
         if (len(snake.tailx) > snake.leng):
             snake.tailx.pop(0)
             snake.taily.pop(0)
-        
-        
+
+
 while not vr.done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             vr.done = True
             exit()
             quit()
-    
+
     gamef.grid()
     gamef.keyd()
     c+=1
