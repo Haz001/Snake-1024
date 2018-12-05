@@ -7,14 +7,16 @@ except:
     exit()
 a = False
 b = False
+c = False
 try:
     import random
     a = True
     import time
     b = True
+    import threading
+    c = True
 except:
-    print("----<error>-----\nProblem with imported modules\nModules|Imported\nrandom |"+str(a)+"\ntime   |"+str(b)+"\nPlease fix")
-
+    print("----<error>-----\nProblem with imported modules\nModules|Imported\nrandom |"+str(a)+"\ntime   |"+str(b)+"\threading   |"+str(c)+"\nPlease fix")
 class vr:
     #grid width
     gw = 16
