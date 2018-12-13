@@ -9,12 +9,22 @@
         width: 100%;
         height: 250px;
         background: black;
-        overflow-x: scroll;
-        overflow-y: hidden;
+        overflow: auto;
       }
       img{
         height: 100%;
         float: left;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .btl{
+          float: left;
+      }
+      .btr{
+        float: right;
+      }
+      a{
+
       }
     </style>
   </head>
@@ -22,12 +32,34 @@
     <h1>Snake 1024</h1>
     <p>A modern Snake made in Python using pygames.</p>
     <div class="pic">
-      <img src="img/000.png">
-      <img src="img/001.png">
-      <img src="img/002.png">
-      <img src="img/003.png">
+      <button class="btl" onclick="plusDivs(-1)">&#10094;</button>
+      <button class="btr" onclick="plusDivs(+1)">&#10095;</button>
+      <img class="pics" src="img/000.png">
+      <img class="pics" src="img/001.png">
+      <img class="pics" src="img/002.png">
+      <img class="pics" src="img/003.png">
     </div>
     <br/>
+
     <a href="https://github.com/Haz001/Snake-1024/releases">Release</a>
   </body>
+  <script>
+  var slideIndex = 1;
+  showDivs(slideIndex);
+
+  function plusDivs(n) {
+      showDivs(slideIndex += n);
+  }
+
+  function showDivs(n) {
+      var i;
+      var x = document.getElementsByClassName("pics");
+      if (n > x.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = x.length} ;
+      for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";
+      }
+      x[slideIndex-1].style.display = "block";
+  }
+  </script>
 </html>
