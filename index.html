@@ -14,7 +14,6 @@
       }
       img{
         height: 100%;
-        float: left;
         margin-left: auto;
         margin-right: auto;
       }
@@ -25,7 +24,34 @@
         float: right;
       }
       a{
+        display: box;
+        text-decoration:none;
+        font-size: 16px;
 
+        color: white;
+        background-color: #366a96;
+        border-top: 6px solid #366a96;
+        border-left: 6px solid #366a96;
+        border-right: 6px solid #366a96;
+        border-bottom: 6px solid #366a96;
+        border-radius: 5px;
+        padding: 0px;
+        -webkit-transition: 0.5s;
+      }
+      a:hover{
+        display: box;
+        text-decoration:underline;
+        font-size: 16px;
+        color: #ffc836;
+        background-color: #3679b0;
+        border-top: 6px solid #3679b0;
+        border-left: 6px solid #3679b0;
+        border-right: 6px solid #3679b0;
+        border-bottom: 6px solid #ffc836;
+        border-radius: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        -webkit-transition: 0.25s;
       }
     </style>
   </head>
@@ -40,8 +66,8 @@
       <img class="pics" src="img/002.png">
       <img class="pics" src="img/003.png">
     </div>
+    <p id="sl">1</p>
     <br/>
-
     <a href="https://github.com/Haz001/Snake-1024/releases">Release</a>
   </body>
   <script>
@@ -50,6 +76,7 @@
 
   function plusDivs(n) {
       showDivs(slideIndex += n);
+      document.getElementById("sl").innerHTML = slideIndex;
   }
 
   function showDivs(n) {
