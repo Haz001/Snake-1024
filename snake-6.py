@@ -31,9 +31,11 @@ class game:
         class screen:
             width = 16
             height = 16
+            full = True
         class rules:
             wallloop = False
         class misc:
+            font = pygame.font.SysFont('Consolas', 15)
             coloroffset = 4
         class current:
             points = 0
@@ -51,12 +53,23 @@ class game:
             x = 0
             y = 0
             lvl = 0
-            # def place():
-            #     apple.x = random.randint(1,vr.gw-2)
-            #     apple.y = random.randint(1,vr.gh-2)
-            #     while not(check(apple.x, apple.y)):
-            #         apple.x = random.randint(1,vr.gw-2)
-            #         apple.y = random.randint(1,vr.gh-2)
+            def place():
+                game.var.apple.x = random.randint(1,game.var.grid.width-2)
+                game.var.apple.y = random.randint(1,game.var.grid.height-2)
+                # while not(check(game.var.apple.x, game.var.apple.y)):
+                #     game.var.apple.x = random.randint(1,game.var.grid.width-2)
+                #     game.var.apple.y = random.randint(1,game.var.grid.height-2)
+        class bomb:
+            color = (0,255,0)
+            x = 0
+            y = 0
+            lvl = 0
+            def place():
+                game.var.bomb.x = random.randint(1,game.var.grid.width-2)
+                game.var.bomb.y = random.randint(1,game.var.grid.height-2)
+                # while not(check(apple.x, apple.y)):
+                #     game.var.bomb.x = random.randint(1,game.var.grid.width-2)
+                #     game.var.bomb.y = random.randint(1,game.var.grid.height-2)
         class snake:
             color = (0,0,192)
             length = 4
@@ -64,29 +77,60 @@ class game:
             y = 0
             direction = 5
             speed = 10
+            deaths = 0
             class tail:
                 x = []
                 y = []
 
 
         def setup():
+
             game.var.screen.width = game.var.grid.width*game.var.grid.blockwidth
             game.var.screen.height = game.var.grid.height*game.var.grid.blockwidth
-            game.var.py.screen = pygame.display.set_mode((game.var.screen.width,game.var.screen.height))
+            if (game.var.screen.full):
+                game.var.py.screen = pygame.display.set_mode((game.var.screen.width,game.var.screen.height),pygame.FULLSCREEN)
+            else:
+                game.var.py.screen = pygame.display.set_mode((game.var.screen.width,game.var.screen.height),pygame.RESIZABLE)
             game.var.snake.x = random.randint(1,game.var.grid.width-2)
             game.var.snake.y = random.randint(1,game.var.grid.height-2)
-            game.var.apple.x = random.randint(1,game.var.grid.width-2)
-            game.var.apple.y = random.randint(1,game.var.grid.height-2)
+            game.var.snake.length = 4
+            game.var.snake.direction = 5
+            game.var.snake.tail.x = []
+            game.var.snake.tail.y = []
+            game.var.apple.place()
+            game.var.bomb.place()
             print("Screen: Setup")
             print("done")
     class fun:
         def start():
             game.var.setup()
             game.fun.draw.screen()
+        def death():
+            game.var.snake.deaths+=1
+            game.fun.draw.string(game.var.py.screen,game.var.grid.blockwidth,game.var.grid.blockwidth,72,"Game over!\nScore: "+str(game.var.snake.length-4),(255,0,0))
+
+            pygame.display.flip()
+            time.sleep(1.5)
+            game.var.setup()
+            game.fun.draw.screen()
         class draw:
             def rec(s,x,y,w,h,c):
                 pygame.draw.rect(s,c,pygame.Rect(x,y,w,h))
+            def string(s,x,y,height,string,c):
+                font = game.var.misc.font
+                if(height != None):
+                    font = pygame.font.SysFont('Consolas', height)
+                else:
+                    height = 15
+                if (len(string.split("\n"))>0):
+                    for i in range(len(string.split("\n"))):
+                        text = font.render(string.split("\n")[i], False, c)
+                        s.blit(text,(x,y+(height*i)))
+                else:
+                    text = font.render(string, False, c)
+                    s.blit(text,(x,y))
             def screen():
+
                 screen = game.var.py.screen
                 block_width = game.var.grid.blockwidth
                 screen_width = game.var.screen.width
@@ -113,6 +157,7 @@ class game:
                 rec(screen,0,0,screen_width,block_width,(8,8,8))
                 rec(screen,0,screen_height-block_width,screen_height,block_width,(8,8,8))
                 color=(255,0,0)
+                rec(screen, block_width*game.var.bomb.x+2,block_width*game.var.bomb.y+2, block_width-4, block_width-4,color)
                 color=game.var.apple.color
                 rec(screen, block_width*game.var.apple.x+2,block_width*game.var.apple.y+2, block_width-4, block_width-4,color)
 
@@ -128,6 +173,7 @@ class game:
                     rec(screen,block_width*game.var.snake.tail.x[i],block_width*game.var.snake.tail.y[i],block_width,block_width,color)
                 color=game.var.snake.color
                 rec(screen,block_width*game.var.snake.x,block_width*game.var.snake.y,block_width,block_width,color)
+                game.fun.draw.string(screen,0,0,30,"points: "+str(game.var.snake.length-4),(255,255,255))
                 pygame.display.flip()
         #====< Not done >=====#
         def ref():
@@ -147,7 +193,7 @@ class game:
                 move(-1,0)
                 #snake.x-=1
         def move(x,y):
-            death = game.fun.start
+            death = game.fun.death
             #x check
             if (game.var.snake.x+x)>= game.var.grid.width-1:
                 if(game.var.rules.wallloop):
@@ -180,26 +226,25 @@ class game:
                     death()
             else:
                 game.var.snake.y+=y
-            #
-            # #apple
-            # if (snake.x == apple.x) and (snake.y == apple.y):
-            #     snake.leng+=1
-            #     apple.lvl+=1
-            #
-            #     apple.place()
-            #     bomb.place()
-            # elif (snake.x == bomb.x) and (snake.y == bomb.y):
-            #     death()
-            #     bomb.x = random.randint(1,vr.gw-2)
-            #     bomb.y = random.randint(1,vr.gh-2)
-            #     #print("Apple pos:\nX - "+str(apple.x)+"\nY - "+str(apple.y))
-            # cdeaths = snake.deaths;
-            # for i in range(len(snake.tailx)):
-            #     if(snake.deaths == cdeaths):
-            #         if (snake.x == snake.tailx[i]):
-            #              if (snake.y == snake.taily[i]):
-            #                  #print("game over")
-            #                  death();
+
+            #  apple
+            if (game.var.snake.x == game.var.apple.x) and (game.var.snake.y == game.var.apple.y):
+                game.var.snake.length+=1
+                game.var.apple.lvl+=1
+
+                game.var.apple.place()
+                game.var.bomb.place()
+            elif (game.var.snake.x == game.var.bomb.x) and (game.var.snake.y == game.var.bomb.y):
+                death()
+                game.var.bomb.place()
+                #print("Apple pos:\nX - "+str(apple.x)+"\nY - "+str(apple.y))
+            cdeaths = game.var.snake.deaths;
+            for i in range(len(game.var.snake.tail.x)):
+                if(game.var.snake.deaths == cdeaths):
+                    if (game.var.snake.x == game.var.snake.tail.x[i]):
+                         if (game.var.snake.y == game.var.snake.tail.y[i]):
+                             #print("game over")
+                             death();
         def tails():
             game.var.snake.tail.x.append(game.var.snake.x)
             game.var.snake.tail.y.append(game.var.snake.y)
@@ -223,6 +268,9 @@ class game:
                 if(dir != 1):
                     ndir=3
             game.var.snake.direction = ndir
+            if pressed[pygame.K_z]:
+                game.var.screen.full = not game.var.screen.full
+                game.var.setup()
 
 print("starting")
 game.fun.start()
