@@ -31,7 +31,7 @@ class game:
         class screen:
             width = 16
             height = 16
-            full = True
+            full = False
         class rules:
             wallloop = False
         class misc:
@@ -274,23 +274,29 @@ class game:
 
 print("starting")
 game.fun.start()
-c = 0
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            exit()
-            quit()
+def loop():
+    c = 0
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+                quit()
 
-    # gamef.grid()
-    game.fun.keyd()
-    c+=1
-    game.fun.draw.screen()
-    if (c >= (100/10)):
-        game.fun.ref()
-        c=0
-        #snake.speed+=1
-    if not(game.var.snake.direction  == 5):
-        pygame.display.set_caption("Snake!!!|Score: "+str(game.var.snake.length-4))
-    pygame.display.flip()
-    game.var.py.clock.tick(100)
+        # gamef.grid()
+        game.fun.keyd()
+        c+=1
+        game.fun.draw.screen()
+        if (c >= (100/10)):
+            game.fun.ref()
+            c=0
+            #snake.speed+=1
+        if not(game.var.snake.direction  == 5):
+            pygame.display.set_caption("Snake!!!|Score: "+str(game.var.snake.length-4))
+        pygame.display.flip()
+        game.var.py.clock.tick(100)
+try:
+    loop()
+except  Exception as e:
+    print(e)
+    input()
