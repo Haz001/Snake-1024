@@ -20,7 +20,6 @@ except:
 
 
 class game:
-
     class var:
         class grid:
             width = 16
@@ -38,6 +37,7 @@ class game:
             font = pygame.font.SysFont('Consolas', 15)
             coloroffset = 4
         class current:
+            highscore = 0
             points = 0
             deaths = 0
             state = 0
@@ -84,7 +84,12 @@ class game:
 
 
         def setup():
-
+            file = open("hs.data",'r')
+            try:
+                game.var.current.highscore = int(file.read())
+            except:
+                game.var.current.highscore = 0
+            file.close()
             game.var.screen.width = game.var.grid.width*game.var.grid.blockwidth
             game.var.screen.height = game.var.grid.height*game.var.grid.blockwidth
             if (game.var.screen.full):
@@ -99,15 +104,25 @@ class game:
             game.var.snake.tail.y = []
             game.var.apple.place()
             game.var.bomb.place()
+            game.var.current.points = 0
             print("Screen: Setup")
             print("done")
     class fun:
         def start():
             game.var.setup()
             game.fun.draw.screen()
+
+
         def death():
             game.var.snake.deaths+=1
-            game.fun.draw.string(game.var.py.screen,game.var.grid.blockwidth,game.var.grid.blockwidth,72,"Game over!\nScore: "+str(game.var.snake.length-4),(255,0,0))
+            if (game.var.current.highscore > game.var.current.points):
+                game.fun.draw.string(game.var.py.screen,game.var.grid.blockwidth,game.var.grid.blockwidth,50,"Game over!\nScore: "+str(game.var.current.points)+"\nHighScore: "+str(game.var.current.highscore),(255,0,0))
+            elif (game.var.current.highscore <= game.var.current.points):
+                game.fun.draw.string(game.var.py.screen,game.var.grid.blockwidth,game.var.grid.blockwidth,50,"Game over!\nNew HighScore!\nHighScore: "+str(game.var.current.points),(255,0,0))
+                game.var.current.highscore = game.var.current.points
+                file = open("hs.data",'w')
+                file.write(str(game.var.current.highscore))
+                file.close()
 
             pygame.display.flip()
             time.sleep(1.5)
@@ -230,6 +245,7 @@ class game:
             #  apple
             if (game.var.snake.x == game.var.apple.x) and (game.var.snake.y == game.var.apple.y):
                 game.var.snake.length+=1
+                game.var.current.points+=1
                 game.var.apple.lvl+=1
 
                 game.var.apple.place()
@@ -292,7 +308,7 @@ def loop():
             c=0
             #snake.speed+=1
         if not(game.var.snake.direction  == 5):
-            pygame.display.set_caption("Snake!!!|Score: "+str(game.var.snake.length-4))
+            pygame.display.set_caption("Snake!!!|Score: "+str(game.var.current.points))
         pygame.display.flip()
         game.var.py.clock.tick(100)
 try:
