@@ -45,9 +45,10 @@ class game:
             clock = pygame.time.Clock()
             screen = pygame.display.set_mode((100, 100))
         def getvar():
-            file = open("var.data",'r')
-            print(file.read())
-            file.close()
+##            file = open("var.data",'r')
+##            print(file.read())
+##            file.close()
+            print("To be added")
         class apple:
             color = (0,255,0)
             x = 0
@@ -84,12 +85,13 @@ class game:
 
 
         def setup():
-            file = open("hs.data",'r')
             try:
+                file = open("hs.data",'r')
                 game.var.current.highscore = int(file.read())
+                file.close()
             except:
                 game.var.current.highscore = 0
-            file.close()
+            
             game.var.screen.width = game.var.grid.width*game.var.grid.blockwidth
             game.var.screen.height = game.var.grid.height*game.var.grid.blockwidth
             if (game.var.screen.full):
@@ -193,18 +195,18 @@ class game:
         #====< Not done >=====#
         def ref():
             game.fun.tails()
-            dir = game.var.snake.direction
+            dire = game.var.snake.direction
             move = game.fun.move
-            if (dir== 0):
+            if (dire== 0):
                 move(0,-1)
                 #snake.y -=1
-            elif (dir == 1):
+            elif (dire == 1):
                 move(1,0)
                 #snake.x+=1
-            elif (dir == 2):
+            elif (dire == 2):
                 #snake.y+=1
                 move(0,1)
-            elif (dir == 3):
+            elif (dire == 3):
                 move(-1,0)
                 #snake.x-=1
         def move(x,y):
@@ -269,21 +271,21 @@ class game:
                 game.var.snake.tail.y.pop(0)
         def keyd():
             pressed = pygame.key.get_pressed()
-            dir = game.var.snake.direction
-            ndir = dir
+            dire = game.var.snake.direction
+            ndire = dire
             if pressed[pygame.K_UP]:
-                if(dir != 2):
-                    ndir=0
+                if(dire != 2):
+                    ndire=0
             if pressed[pygame.K_RIGHT]:
-                if(dir != 3):
-                    ndir=1
+                if(dire != 3):
+                    ndire=1
             if pressed[pygame.K_DOWN]:
-                if(dir != 0):
-                    ndir=2
+                if(dire != 0):
+                    ndire=2
             if pressed[pygame.K_LEFT]:
-                if(dir != 1):
-                    ndir=3
-            game.var.snake.direction = ndir
+                if(dire != 1):
+                    ndire=3
+            game.var.snake.direction = ndire
             if pressed[pygame.K_z]:
                 game.var.screen.full = not game.var.screen.full
                 game.var.setup()
@@ -316,3 +318,4 @@ try:
 except  Exception as e:
     print(e)
     input()
+loop()
