@@ -15,10 +15,10 @@ try:
     b = True
     import threading
     c = True
+    import os
+    d = True
 except:
-    print("----<error>-----\nProblem with imported modules\nModules|Imported\nrandom |"+str(a)+"\ntime   |"+str(b)+"\threading   |"+str(c)+"\nPlease fix")
-
-
+    print("----<error>-----\nProblem with imported modules\nModules\t\t|Imported\t|\n----------------|---------------|\nrandom\t\t|"+str(a)+"\t\t|\ntime\t\t|"+str(b)+"\t\t|\nthreading\t|"+str(c)+"\t\t|\nos\t\t|"+str(d)+"\t\t|\nPlease fix")
 class game:
     class var:
         class grid:
@@ -42,9 +42,11 @@ class game:
             deaths = 0
             state = 0
         class py:
+            tick = 100
             clock = pygame.time.Clock()
             screen = pygame.display.set_mode((100, 100))
         def getvar():
+
 ##            file = open("var.data",'r')
 ##            print(file.read())
 ##            file.close()
@@ -68,16 +70,16 @@ class game:
             def place():
                 game.var.bomb.x = random.randint(1,game.var.grid.width-2)
                 game.var.bomb.y = random.randint(1,game.var.grid.height-2)
-                # while not(check(apple.x, apple.y)):
-                #     game.var.bomb.x = random.randint(1,game.var.grid.width-2)
-                #     game.var.bomb.y = random.randint(1,game.var.grid.height-2)
+                while (4>((game.var.bomb.x-game.var.apple.x)**2+(game.var.bomb.y-game.var.apple.y)**2)**0.5):
+                     game.var.bomb.x = random.randint(1,game.var.grid.width-2)
+                     game.var.bomb.y = random.randint(1,game.var.grid.height-2)
         class snake:
             color = (0,0,192)
             length = 4
             x = 0
             y = 0
             direction = 5
-            speed = 10
+            speed = float(5)
             deaths = 0
             class tail:
                 x = []
@@ -85,13 +87,15 @@ class game:
 
 
         def setup():
-            try:
-                file = open("hs.data",'r')
-                game.var.current.highscore = int(file.read())
-                file.close()
-            except:
+            if(os.path.isfile("hs.data")):
+                try:
+                    file = open("hs.data",'r')
+                    game.var.current.highscore = int(file.read())
+                    file.close()
+                except:
+                    game.var.current.highscore = 0
+            else:
                 game.var.current.highscore = 0
-            
             game.var.screen.width = game.var.grid.width*game.var.grid.blockwidth
             game.var.screen.height = game.var.grid.height*game.var.grid.blockwidth
             if (game.var.screen.full):
@@ -107,8 +111,7 @@ class game:
             game.var.apple.place()
             game.var.bomb.place()
             game.var.current.points = 0
-            print("Screen: Setup")
-            print("done")
+            game.var.snake.speed = 5
     class fun:
         def start():
             game.var.setup()
@@ -125,6 +128,7 @@ class game:
                 file = open("hs.data",'w')
                 file.write(str(game.var.current.highscore))
                 file.close()
+
 
             pygame.display.flip()
             time.sleep(1.5)
@@ -190,7 +194,7 @@ class game:
                     rec(screen,block_width*game.var.snake.tail.x[i],block_width*game.var.snake.tail.y[i],block_width,block_width,color)
                 color=game.var.snake.color
                 rec(screen,block_width*game.var.snake.x,block_width*game.var.snake.y,block_width,block_width,color)
-                game.fun.draw.string(screen,0,0,30,"points: "+str(game.var.snake.length-4),(255,255,255))
+                game.fun.draw.string(screen,0,0,25,"P: "+str(game.var.current.points)+"|HS: "+str(game.var.current.highscore)+"|V: "+str(game.var.snake.speed)+"B/S",(255,255,255))
                 pygame.display.flip()
         #====< Not done >=====#
         def ref():
@@ -249,7 +253,8 @@ class game:
                 game.var.snake.length+=1
                 game.var.current.points+=1
                 game.var.apple.lvl+=1
-
+                game.var.snake.speed += 0.5
+                print(game.var.snake.speed)
                 game.var.apple.place()
                 game.var.bomb.place()
             elif (game.var.snake.x == game.var.bomb.x) and (game.var.snake.y == game.var.bomb.y):
@@ -305,14 +310,14 @@ def loop():
         game.fun.keyd()
         c+=1
         game.fun.draw.screen()
-        if (c >= (100/10)):
+        if (c >= (game.var.py.tick/game.var.snake.speed)):
             game.fun.ref()
             c=0
             #snake.speed+=1
         if not(game.var.snake.direction  == 5):
             pygame.display.set_caption("Snake!!!|Score: "+str(game.var.current.points))
         pygame.display.flip()
-        game.var.py.clock.tick(100)
+        game.var.py.clock.tick(game.var.py.tick)
 try:
     loop()
 except  Exception as e:
