@@ -19,7 +19,8 @@ try:
 	d = True
 except:
 	print("----<error>-----\nProblem with imported modules\nModules\t\t|Imported\t|\n----------------|---------------|\nrandom\t\t|"+str(a)+"\t\t|\ntime\t\t|"+str(b)+"\t\t|\nthreading\t|"+str(c)+"\t\t|\nos\t\t|"+str(d)+"\t\t|\nPlease fix")
-
+def strtobool(s):
+  return s.lower() in ("true", "yes", "1")
 class var:
 	class grid:
 		width = 16
@@ -32,12 +33,14 @@ class var:
 		height = 16
 		full = False
 	class rules:
-		wallloop = True
+		wallloop = False
 	class misc:
+		modes= []
 		font = pygame.font.SysFont('Consolas', 15)
 		coloroffset = 4
 		scene = 0
 	class current:
+		mode = 2
 		highscore = 0
 		points = 0
 		deaths = 0
@@ -46,21 +49,33 @@ class var:
 		tick = 100
 		clock = pygame.time.Clock()
 		screen = pygame.display.set_mode((100, 100))
-	def getvar():
+	def getvar(num):
 		file = open("snake.data",'r')
 		tmp = (file.read())
-		tmp = tmp.split(";")
-		tmp = ""
+		tmp = tmp.split("\n")
+		tmp = tmp[num].split(";")
 		for i in range(len(tmp)):
 			if(len(tmp[i].split(":"))== 2):
-				if(tmp[i].split(":")[0] == "Bombs"):
-					var.bomb.enabled = bool(tmp[i].split(":")[1])
-				elif(tmp[i].split(":")[0] == "Walls"):
-					var.rules.wallloop = bool(tmp[i].split(":")[1])
-
-
+				if(tmp[i].split(":")[0].lower() == "bombs"):
+					var.bomb.enabled = strtobool(tmp[i].split(":")[1])
+					print(str(var.bomb.enabled)+" = "+str(strtobool(tmp[i].split(":")[1])))
+				elif(tmp[i].split(":")[0].lower() == "walls"):
+					var.rules.wallloop = not(strtobool(tmp[i].split(":")[1]))
+				elif(tmp[i].split(":")[0].lower() == "speed"):
+					var.snake.speed = float(tmp[i].split(":")[1])
+				elif(tmp[i].split(":")[0].lower() == "accel"):
+					var.snake.accel = float(tmp[i].split(":")[1])
+				elif(tmp[i].split(":")[0].lower() == "lengt"):
+					var.snake.length = float(tmp[i].split(":")[1])
 		file.close()
-		print("To be added")
+
+	def modes():
+		file = open("snake.data",'r')
+		tmp = (file.read())
+		tmp = tmp.split("\n")
+		for num in range(len(tmp)):
+			var.misc.modes.append(tmp[num].split(";")[0])
+		file.close()
 	class apple:
 		color = (0,255,0)
 		x = 0
@@ -92,6 +107,7 @@ class var:
 		direction = 5
 		lastdir = 5
 		speed = float(5)
+		accel = float(0.5)
 		deaths = 0
 		class tail:
 			x = []
@@ -123,10 +139,11 @@ class var:
 		var.apple.place()
 		var.bomb.place()
 		var.current.points = 0
-		var.snake.speed = 5
+		var.snake.speed = float(5)
 class game:
 	def start():
 		var.setup()
+		var.getvar(var.current.mode)
 		game.draw.screen()
 	def death():
 		var.snake.deaths+=1
@@ -146,6 +163,7 @@ class game:
 		pygame.display.flip()
 		time.sleep(1.5)
 		var.setup()
+		var.getvar(var.current.mode)
 		game.draw.screen()
 	class draw:
 		def rec(s,x,y,w,h,c):
@@ -186,8 +204,9 @@ class game:
 			rec(screen,screen_width-block_width,0,block_width,screen_height,(8,8,8))
 			rec(screen,0,0,screen_width,block_width,(8,8,8))
 			rec(screen,0,screen_height-block_width,screen_height,block_width,(8,8,8))
-			color=(255,0,0)
-			rec(screen, block_width*var.bomb.x+2,block_width*var.bomb.y+2, block_width-4, block_width-4,color)
+			color=(246,0,0)
+			if (var.bomb.enabled):
+				rec(screen, block_width*var.bomb.x+2,block_width*var.bomb.y+2, block_width-4, block_width-4,color)
 			color=var.apple.color
 			rec(screen, block_width*var.apple.x+2,block_width*var.apple.y+2, block_width-4, block_width-4,color)
 			color_offset = var.misc.coloroffset
@@ -201,7 +220,7 @@ class game:
 				rec(screen,block_width*var.snake.tail.x[i],block_width*var.snake.tail.y[i],block_width,block_width,color)
 			color=var.snake.color
 			rec(screen,block_width*var.snake.x,block_width*var.snake.y,block_width,block_width,color)
-			game.draw.string(screen,0,0,25,"P: "+str(var.current.points)+"|HS: "+str(var.current.highscore)+"|V: "+str(var.snake.speed)+"B/S",(255,255,255))
+			game.draw.string(screen,0,0,25,"P: "+str(var.current.points)+"|HS: "+str(var.current.highscore)+"|V: "+str(var.snake.speed)+"|L: "+str(var.snake.length)+"|B/S",(255,255,255))
 			pygame.display.flip()
 	def ref():
 		game.tails()
@@ -258,13 +277,16 @@ class game:
 			var.snake.length+=1
 			var.current.points+=1
 			var.apple.lvl+=1
-			var.snake.speed += 0.5
+			var.snake.speed += var.snake.accel
 			print(var.snake.speed)
 			var.apple.place()
 			var.bomb.place()
-		elif (var.snake.x == var.bomb.x) and (var.snake.y == var.bomb.y):
+		elif (var.snake.x == var.bomb.x) and (var.snake.y == var.bomb.y) and (var.bomb.enabled):
+			
 			death()
 			var.bomb.place()
+			
+			print(var.bomb.enabled)
 			#print("Apple pos:\nX - "+str(apple.x)+"\nY - "+str(apple.y))
 		cdeaths = var.snake.deaths;
 		for i in range(len(var.snake.tail.x)):
@@ -305,6 +327,9 @@ class menu:
 	def setup():
 		var.screen.width = 300
 		var.screen.height = 80
+		var.modes()
+		menu.menu2 = var.misc.modes
+		print(var.misc.modes)
 	menu1 = ["Play","Quit"]
 	menu2 = ["Easy","Medium","Hard"]
 	menu = 1
@@ -350,7 +375,10 @@ class menu:
 				else:
 					quit();
 			else:
+
 				game.start()
+				var.current.mode = menu.button
+				var.getvar(menu.button)
 				var.misc.scene+=1
 
 		elif(pygame.key.get_pressed()[pygame.K_DOWN]):
@@ -376,9 +404,8 @@ class menu:
 			
 
 
-print("starting")
-menu.setup()
-var.getvar()
+
+
 
 
 
@@ -413,6 +440,7 @@ def loop():
 			pygame.display.flip()
 			var.py.clock.tick(var.py.tick)
 try:
+	menu.setup()
 	loop()
 except  Exception as e:
 	print(e)

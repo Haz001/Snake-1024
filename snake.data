@@ -1,1 +1,4 @@
 Easy;Bombs:False;Walls:False;Speed:5;Accel:0;
+Medium;Bombs:False;Walls:True;Speed:5;Accel:0.25;
+Hard;Bombs:True;Walls:True;Speed:5;Accel:0.5;
+Ultra Hard;Bombs:True;Walls:True;Speed:10;Accel:1;lengt:10;
