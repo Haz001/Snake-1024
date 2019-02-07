@@ -32,7 +32,7 @@ class var:
 		height = 16
 		full = False
 	class rules:
-		wallloop = False
+		wallloop = True
 	class misc:
 		font = pygame.font.SysFont('Consolas', 15)
 		coloroffset = 4
@@ -47,10 +47,19 @@ class var:
 		clock = pygame.time.Clock()
 		screen = pygame.display.set_mode((100, 100))
 	def getvar():
+		file = open("snake.data",'r')
+		tmp = (file.read())
+		tmp = tmp.split(";")
+		tmp = ""
+		for i in range(len(tmp)):
+			if(len(tmp[i].split(":"))== 2):
+				if(tmp[i].split(":")[0] == "Bombs"):
+					var.bomb.enabled = bool(tmp[i].split(":")[1])
+				elif(tmp[i].split(":")[0] == "Walls"):
+					var.rules.wallloop = bool(tmp[i].split(":")[1])
 
-##			file = open("var.data",'r')
-##			print(file.read())
-##			file.close()
+
+		file.close()
 		print("To be added")
 	class apple:
 		color = (0,255,0)
@@ -64,6 +73,7 @@ class var:
 			#	 var.apple.x = random.randint(1,var.grid.width-2)
 			#	 var.apple.y = random.randint(1,var.grid.height-2)
 	class bomb:
+		enabled = True
 		color = (0,255,0)
 		x = 0
 		y = 0
@@ -223,7 +233,7 @@ class game:
 		elif(var.snake.x+x)<= 0:
 			#print ("out of bounds")
 			if(var.rules.wallloop):
-				snake.x = vr.gw-2;
+				var.snake.x = var.grid.width-2;
 			else:
 				death()
 		else:
@@ -232,13 +242,13 @@ class game:
 		if (var.snake.y+y)>= var.grid.height-1:
 			#print ("out of bounds")
 			if(var.rules.wallloop):
-				snake.y = 1;
+				var.snake.y = 1;
 			else:
 				death()
 		elif(var.snake.y+y)<= 0:
 			#print ("out of bounds")
 			if(var.rules.wallloop):
-				var.snake.y = vr.var.grid.height-2;
+				var.snake.y = var.grid.height-2;
 			else:
 				death()
 		else:
@@ -342,12 +352,20 @@ class menu:
 			else:
 				game.start()
 				var.misc.scene+=1
+
 		elif(pygame.key.get_pressed()[pygame.K_DOWN]):
-			if(menu.button+1 <= len(menu.menu1)-1):
-				menu.button += 1
-			else:
-				menu.button = 0
-			print(menu.button)
+			if menu.menu == 1:
+				if(menu.button+1 <= len(menu.menu1)-1):
+					menu.button += 1
+				else:
+					menu.button = 0
+				print(menu.button)
+			elif menu.menu == 2:
+				if(menu.button+1 <= len(menu.menu2)-1):
+					menu.button += 1
+				else:
+					menu.button = 0
+				print(menu.button)
 		elif(pygame.key.get_pressed()[pygame.K_UP]):
 			if(menu.button-1 >= 0):
 				menu.button -= 1
@@ -360,7 +378,7 @@ class menu:
 
 print("starting")
 menu.setup()
-
+var.getvar()
 
 
 
