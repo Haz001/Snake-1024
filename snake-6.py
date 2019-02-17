@@ -322,6 +322,7 @@ class game:
 			var.screen.full = not var.screen.full
 			var.setup()
 class menu:
+	keydel = 1000
 	def gsetup():
 		var.screen.width= 120
 	def setup():
@@ -367,7 +368,9 @@ class menu:
 				else:
 					menu.draw.btn(s,0,20*i,200,20,(20,30,40),(200,210,220),lmenu[i])
 	def keyd():
+
 		if (pygame.key.get_pressed()[pygame.K_RIGHT]) or (pygame.key.get_pressed()[pygame.K_RETURN]):
+			menu.keydel = 0
 			if (menu.menu == 1):
 				if (menu.button == 0):
 					menu.menu = 2
@@ -382,6 +385,7 @@ class menu:
 				var.misc.scene+=1
 
 		elif(pygame.key.get_pressed()[pygame.K_DOWN]):
+			menu.keydel = 0
 			if menu.menu == 1:
 				if(menu.button+1 <= len(menu.menu1)-1):
 					menu.button += 1
@@ -395,6 +399,7 @@ class menu:
 					menu.button = 0
 				print(menu.button)
 		elif(pygame.key.get_pressed()[pygame.K_UP]):
+			menu.keydel = 0
 			if(menu.button-1 >= 0):
 				menu.button -= 1
 			else:
@@ -424,8 +429,12 @@ def loop():
 
 			menu.draw.draw()
 			pygame.display.flip()
-			var.py.clock.tick(10)
-			menu.keyd()
+			
+			if(menu.keydel >= 50):
+				menu.keyd()
+			menu.keydel+=1
+			print(menu.keydel)
+
 			
 		elif (var.misc.scene == 1):
 			game.keyd()
@@ -438,7 +447,7 @@ def loop():
 			if not(var.snake.direction  == 5):
 				pygame.display.set_caption("Snake!!!|Score: "+str(var.current.points))
 			pygame.display.flip()
-			var.py.clock.tick(var.py.tick)
+		var.py.clock.tick(var.py.tick)
 try:
 	menu.setup()
 	loop()
@@ -448,4 +457,5 @@ except  Exception as e:
 	log.write("Error"+str(e)+"\n")
 	log.close()
 loop()
+
 
