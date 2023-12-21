@@ -1,6 +1,6 @@
 import pygame
+import time
 from dataclasses import dataclass
-
 
 class Point:
     """
@@ -87,11 +87,32 @@ class controller:
 @dataclass
 class Snake:
     loc = Point(0, 0)
-    speed = Point(0, 0)
+    speed = Point(1, 1)
+    size = Point(60,60)
 
+    last_tick = time.time()
 
     def draw(self, scr: pygame.Surface):
-        pygame.draw.rect(scr, pygame.Color(56,32,216), pygame.Rect(self.loc.x,self.loc.y,60,60))
+        pygame.draw.rect(scr, pygame.Color(56,32,216), pygame.Rect(self.loc.x,self.loc.y,self.size.x,self.size.y))
+
+    def tick(self):
+        current_time = time.time()
+        last_tick = self.last_tick
+        delta_time = current_time-last_tick
+
+        # ToDo: set last tick to new tick
+        # its funny without it, speed increases
+        # with time, but it should be done at.
+        
+        self.loc.x += self.speed.x*delta_time
+        self.loc.y += self.speed.y*delta_time
+        if (self.size.x+self.loc.x >= 1280) or self.loc.x <= 0:
+            self.speed.x = -self.speed.x
+        if (self.size.y+self.loc.y >= 720) or self.loc.y <= 0:
+            self.speed.y = -self.speed.y
+
+
+
 
 
 snake = Snake()
@@ -103,7 +124,6 @@ if __name__ == "__main__":
 
 
 
-
     while running:
         for event in pygame.event.get():
 
@@ -112,8 +132,13 @@ if __name__ == "__main__":
             elif event.type == pygame.KEYDOWN:
                 pass
 
-        pygame.display.flip()
+
+        screen.fill("grey")
         
         snake.draw(screen)
-        clock.tick(60)
+        snake.tick()
+
+        pygame.display.flip()
+        
+        clock.tick(600)
     pygame.quit()
