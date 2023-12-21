@@ -87,7 +87,14 @@ class controller:
 @dataclass
 class Snake:
     loc = Point(0, 0)
+    speed = Point(0, 0)
 
+
+    def draw(self, scr: pygame.Surface):
+        pygame.draw.rect(scr, pygame.Color(56,32,216), pygame.Rect(self.loc.x,self.loc.y,60,60))
+
+
+snake = Snake()
 if __name__ == "__main__":
     running = True
     pygame.init()
@@ -106,6 +113,7 @@ if __name__ == "__main__":
                 pass
 
         pygame.display.flip()
-
+        
+        snake.draw(screen)
         clock.tick(60)
     pygame.quit()
