@@ -24,8 +24,8 @@ class Snake:
     last_tick = time.time()
 
     def draw(self, scr: pygame.Surface):
-        x = round(self.loc.x/self.size.x)*self.size.x
-        y = round(self.loc.y/self.size.y)*self.size.y
+        x = round((self.loc.x/self.size.x)-0.5)*self.size.x
+        y = round((self.loc.y/self.size.y)-0.5)*self.size.y
         pygame.draw.rect(
             scr,
             pygame.Color(56, 32, 216),
