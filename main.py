@@ -3,25 +3,43 @@ import time
 from dataclasses import dataclass
 from Point import *
 import itertools
+from enum import Enum
+import math
 
 pixel_size = Point(20,20)
 screen_size = Point(80*pixel_size.x,45*pixel_size.y)
 
-@dataclass
-class controller:
-    up = [pygame.K_UP, pygame.K_w]
-    left = [pygame.K_LEFT, pygame.K_a]
-    right = [pygame.K_RIGHT, pygame.K_d]
-    down = [pygame.K_DOWN, pygame.K_s]
-    pause = [pygame.K_ESCAPE]
+class Direction(Enum):
+    RIGHT = 1
+    LEFT = 2
+    DOWN = 3
+    UP = 4
 
 @dataclass
+class controller:
+    right = [pygame.K_RIGHT, pygame.K_d]
+    left = [pygame.K_LEFT, pygame.K_a]
+    down = [pygame.K_DOWN, pygame.K_s]
+    up = [pygame.K_UP, pygame.K_w]
+    pause = [pygame.K_ESCAPE]
+
+
+
 class Snake:
-    loc = Point(0, 0)
-    speed = Point(600, 600)
-    size = pixel_size 
-    
-    last_tick = time.time()
+    loc: Point
+    speed: Point
+    size: int
+    last_tick: float
+    tail_size: int
+    tail: list[Point]
+    def __init__(self):
+        self.loc = Point(0, 0)
+        self.speed = Point(600, 600)
+        self.size = pixel_size 
+        self.last_tick = time.time()
+        self.tail_size = 1
+        self.tail = list()
+
 
     def draw(self, scr: pygame.Surface):
         x = round((self.loc.x/self.size.x)-0.5)*self.size.x
@@ -31,12 +49,12 @@ class Snake:
             pygame.Color(56, 32, 216),
             pygame.Rect(x, y, self.size.x, self.size.y),
         )
-        pygame.draw.circle(
-            scr,
-            pygame.Color(216, 32,56 ),
-            self.loc.as_tuple,
-            4
-        )
+        #pygame.draw.circle(
+        #    scr,
+        #    pygame.Color(216, 32,56 ),
+        #    self.loc.as_tuple,
+        #    4
+        #)
 
     def tick(self):
         current_tick = time.time()   # Current time
@@ -56,6 +74,24 @@ class Snake:
         elif self.loc.y <= 0:
             self.speed.y = abs(self.speed.y)
 
+    def change_direction(self, direction: Direction):
+        centre = lambda uncentred, box_delta: (round(uncentred/box_delta)+0.5)*box_delta
+            
+        if direction == Direction.RIGHT:
+            self.loc.y = centre(self.loc.y, pixel_size.y)
+            self.speed = Point(speed, 0)
+        elif direction == Direction.LEFT:
+            self.loc.y = centre(self.loc.y, pixel_size.y)
+            self.speed = Point(-speed, 0)
+        elif direction == Direction.DOWN:
+            self.loc.x = centre(self.loc.x, pixel_size.x)
+            self.speed = Point(0, speed)
+        elif direction == Direction.UP:
+            self.loc.x = centre(self.loc.x, pixel_size.x)
+            self.speed = Point(0, -speed)
+
+
+
 
 snake: Snake
 if __name__ == '__main__':
@@ -70,14 +106,14 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key in controller.up:
-                    snake.speed = Point(0, -speed)
+                if event.key in controller.right:
+                    snake.change_direction(Direction.RIGHT)
                 elif event.key in controller.left:
-                    snake.speed = Point(-speed, 0)
-                elif event.key in controller.right:
-                    snake.speed = Point(speed, 0)
+                    snake.change_direction(Direction.LEFT)
                 elif event.key in controller.down:
-                    snake.speed = Point(0, speed)
+                    snake.change_direction(Direction.DOWN)
+                elif event.key in controller.up:
+                    snake.change_direction(Direction.UP)
         screen.fill('grey')
         snake.tick()
 
